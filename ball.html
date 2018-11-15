@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Bouncing Ball</title>
+    <style type="text/css">
+      body
+      {
+        text-align: center;
+        font-family: monospace;
+        background-color: white;
+      }
+
+      canvas
+      {
+        display: block;
+        width: 640px;
+        height: 480px;
+        margin: auto;
+        margin-top: 10px;
+        border: none;
+        background-color: rgb(200,240,255);
+      }
+    </style>
+  </head>
+  <body>
+    <p>A bouncing ball in WebGL for Interactive Computer Graphics Practice</p>
+    <canvas id="c" width=640 height=480></canvas>
+  <p>Made by<br>Jeffrey Jacob<br>CED15I036</p>  </body>
+  <script id="vs" type="notjs">
+    uniform mat4 u_worldViewProjection;
+    uniform vec3 u_lightWorldPos;
+    uniform mat4 u_world;
+    uniform mat4 u_viewInverse;
+    uniform mat4 u_worldInverseTranspose;
+
+    attribute vec4 a_position;
+    attribute vec3 a_normal;
+    attribute vec2 a_texcoord;
+
+    varying vec4 v_position;
+    varying vec2 v_texCoord;
+    varying vec3 v_normal;
+    varying vec3 v_surfaceToLight;
+    varying vec3 v_surfaceToView;
+
+    void main() {
+      v_texCoord = a_texcoord;
+      v_position = (u_worldViewProjection * a_position);
+      v_normal = (u_worldInverseTranspose * vec4(a_normal, 0)).xyz;
+      v_surfaceToLight = u_lightWorldPos - (u_world * a_position).xyz;
+      v_surfaceToView = (u_viewInverse[3] - (u_world * a_position)).xyz;
+      gl_Position = v_position;
+    }
+  </script>
+  <script id="fs" type="notjs">
+    precision mediump float;
+
+    varying vec4 v_position;
+    varying vec2 v_texCoord;
+    varying vec3 v_normal;
+    varying vec3 v_surfaceToLight;
+    varying vec3 v_surfaceToView;
+
+    uniform vec4 u_lightColor;
+    uniform vec4 u_diffuseMult;
+    uniform sampler2D u_diffuse;
+    uniform vec4 u_specular;
+    uniform float u_shininess;
+    uniform float u_specularFactor;
+
+    vec4 lit(float l ,float h, float m) {
+      return vec4(1.0,
+                  abs(l),//max(l, 0.0),
+                  (l > 0.0) ? pow(max(0.0, h), m) : 0.0,
+                  1.0);
+    }
+
+    void main() {
+      vec4 diffuseColor = texture2D(u_diffuse, v_texCoord) * u_diffuseMult;
+      vec3 a_normal = normalize(v_normal);
+      vec3 surfaceToLight = normalize(v_surfaceToLight);
+      vec3 surfaceToView = normalize(v_surfaceToView);
+      vec3 halfVector = normalize(surfaceToLight + surfaceToView);
+      vec4 litR = lit(dot(a_normal, surfaceToLight),
+                        dot(a_normal, halfVector), u_shininess);
+      vec4 outColor = vec4((
+      u_lightColor * (diffuseColor * litR.y +
+                    u_specular * litR.z * u_specularFactor)).rgb,
+          diffuseColor.a);
+      gl_FragColor = outColor;
+    } 
+  </script>
+  <script src="twgl-full.min.js"></script>
+  <script src="chroma.min.js"></script>
+  <script>
+    "use strict";
+    twgl.setDefaults({attribPrefix: "a_"});
+    const m4 = twgl.m4;
+    const gl = document.querySelector("#c").getContext("webgl");
+    const programInfo = twgl.createProgramInfo(gl, ["vs", "fs"]);
+
+    const bufferInfo = twgl.primitives.createSphereBufferInfo(gl, 1, 24, 12);
+
+    function rand(min, max) {
+      return min + Math.random() * (max - min);
+    }
+
+    // Shared values
+    const lightWorldPosition = [1, 8, -10];
+    const lightColor = [0, 0, 1, 1];
+    const camera = m4.identity();
+    const view = m4.identity();
+    const viewProjection = m4.identity();
+
+    const tex = twgl.createTexture(gl, {
+      min: gl.NEAREST,
+      mag: gl.NEAREST,
+      src: [
+        255, 255, 255, 255,
+        192, 192, 192, 255,
+        192, 192, 192, 255,
+        255, 255, 255, 255,
+      ],
+    });
+
+    const drawObjects = [];
+    const uniforms = {
+      u_lightWorldPos: lightWorldPosition,
+      u_lightColor: lightColor,
+      u_diffuseMult: chroma.hsv(0.3, 0.0, 0.8).gl(),
+      u_specular: [1, 1, 1, 1],
+      u_shininess: 100,
+      u_specularFactor: 1,
+      u_diffuse: tex,
+      u_viewInverse: camera,
+      u_world: m4.identity(),
+      u_worldInverseTranspose: m4.identity(),
+      u_worldViewProjection: m4.identity(),
+    };
+    drawObjects.push({
+      programInfo: programInfo,
+      bufferInfo: bufferInfo,
+      uniforms: uniforms,
+    });
+
+    var zpos=5.0, front =false;
+    function render(time) {
+      time *= 0.01;
+      twgl.resizeCanvasToDisplaySize(gl.canvas);
+      gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
+      gl.enable(gl.DEPTH_TEST);
+      gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+      const projection = m4.perspective(30 * Math.PI / 180, gl.canvas.clientWidth / gl.canvas.clientHeight, 0.5, 100);
+      const eye = [1, 4, -20];
+      const target = [0, 0, 0];
+      const up = [0, 1, 0];
+
+      m4.lookAt(eye, target, up, camera);
+      m4.inverse(camera, view);
+      m4.multiply(projection, view, viewProjection);
+
+      const world = uniforms.u_world;
+      m4.identity(world);
+// ===================================================
+      m4.translate(world, [0, Math.sin(time), zpos], world);
+      console.log(front, zpos)
+      if (Math.floor(zpos) == -10 || Math.floor(zpos) == 10)
+      {
+        front = !front;
+      }
+      if (front)
+      {
+        zpos+= 0.1;
+      }
+      else
+      {
+        zpos-=0.1;
+      }
+
+      m4.transpose(m4.inverse(world, uniforms.u_worldInverseTranspose), uniforms.u_worldInverseTranspose);
+      m4.multiply(viewProjection, uniforms.u_world, uniforms.u_worldViewProjection);
+      // });
+// ===================================================
+      twgl.drawObjectList(gl, drawObjects);
+
+      requestAnimationFrame(render);
+    }
+    requestAnimationFrame(render);
+  </script>
+</html>
