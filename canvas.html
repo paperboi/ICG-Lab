@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Javascript Exercises for Interactive Computer Graphics | Jeffrey Jacob, CED15I036</title>
+	</head>
+	<body>
+		<h1>Interactive Computer Graphics Assignment</h1>
+		<h2>By Jeffrey Jacob, CED15I036</h2>
+		<canvas id="myCanvas" width="1000" height="1000" style="border:1px solid #000000;">
+			Your browser does not support the HTML5 canvas tag.
+		</canvas>
+		<script type="text/javascript">
+			var canvas = document.getElementById("myCanvas")
+			var ctx = canvas.getContext("2d")		
+
+			// 3 Rectang;les
+			ctx.fillStyle = "#FF0000";
+			ctx.fillRect(10,10,300,300);
+			ctx.fillStyle = "#00FF00";
+			ctx.fillRect(25,25,270,270);
+			ctx.fillStyle = "#0000FF";
+			ctx.fillRect(40,40,240,240);
+
+			// Intersecting Rectangles
+			ctx.fillStyle = "rgba(0,255,255,0.5)";
+			ctx.fillRect(10,400,200,200);
+			ctx.fillStyle = "rgba(255,0,255,0.5)";
+			ctx.fillRect(60,350,200,200);
+			ctx.fillStyle = "rgba(255,255,0,0.5)";
+			ctx.fillRect(110,450,200,200);
+
+			// Grey balls
+			ctx.beginPath();
+			ctx.arc(660,200,25,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#DBDBDB";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(750,240,50,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#B6B6B6";
+			ctx.fill();
+			
+			ctx.beginPath();
+			ctx.arc(590,270,30,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#929292";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(540,180,35,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#6D6D6D	";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(650,140,25,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#494949";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(570,120,15,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#242424";
+			ctx.fill();
+			
+			// Smiley face
+			ctx.beginPath();
+			ctx.arc(550,520,100,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#FFFF00";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(510,500,10,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#FFFFFF";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.arc(580,500,10,0,2*Math.PI);
+			ctx.stroke();
+			ctx.fillStyle = "#FFFFFF";
+			ctx.fill();
+
+			ctx.beginPath();
+			ctx.moveTo(480,550);
+			ctx.lineTo(620,550);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(550,525,75,Math.PI/9,Math.PI-Math.PI/9);
+			ctx.stroke();
+			ctx.fillStyle = "#FFFFFF";
+			ctx.fill();
+		</script>
+	</body>
+</html>

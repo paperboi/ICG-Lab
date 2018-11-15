@@ -63,9 +63,15 @@ def MakeDemosaicedImage(BayerImage):
 				)
 	return DemosaicedBayerImageList
 
+BGColor = (4, 15, 15)
+TextColor1 = (46, 233, 131)
+TextColor2 = (242, 226, 186)
+TextColor3 = (43, 168, 74)
+TextColor4 = (252, 255, 252)
+
 def DisplayIntro(Text, Color, Size, Position):
 	DisplayFont = pygame.font.SysFont(None, Size)
-	DisplayText = DisplayFont.render(Text, True, Color, (0, 0, 0))
+	DisplayText = DisplayFont.render(Text, True, Color, BGColor)
 	DisplayTextRect = DisplayText.get_rect()
 	DisplayTextRect.centerx = screen.get_rect().centerx
 	DisplayTextRect.centery = screen.get_rect().centery + Position
@@ -73,12 +79,12 @@ def DisplayIntro(Text, Color, Size, Position):
 
 
 def Intro():
-	DisplayIntro("Bayer's Filter & Demosaicing Algorithm (Only 3 colors)", (0, 255, 0), 50, -100)
-	DisplayIntro("Implementation by Jeffrey Jacob, CED15I036", (0, 255, 0), 35, -50)
-	DisplayIntro("Controls", (255, 0, 0), 25, 0)
-	DisplayIntro("LEFT/RIGHT buttons to shift between images:", (255, 255, 255), 25, 30)
-	DisplayIntro("UP/DOWN buttons to zoom", (255, 255, 255), 25, 55)
-	DisplayIntro("ESC to exit", (255, 255, 255), 25, 80)	 
+	DisplayIntro("Bayer's Filter & Demosaicing Algorithm (Only 3 colors)", TextColor1, 50, -100)
+	DisplayIntro("Implementation by Jeffrey Jacob, CED15I036", TextColor2, 35, -50)
+	DisplayIntro("Controls", TextColor3, 25, 0)
+	DisplayIntro("LEFT/RIGHT buttons to shift between images:", TextColor4, 25, 30)
+	DisplayIntro("UP/DOWN buttons to zoom", TextColor4, 25, 55)
+	DisplayIntro("ESC to exit", TextColor4, 25, 80)	 
 	pygame.display.update()
 
 
@@ -101,7 +107,7 @@ pygame.init()
 running = True
 screen = pygame.display.set_mode((0, 0))
 pygame.display.set_caption("Bayer's Filter & Demosaicing Algorithm (3 Colors)")
-screen.fill((0, 0, 0))
+screen.fill(BGColor)
 
 PixelSize = 10
 CurrentPage = 0
@@ -125,7 +131,7 @@ while running:
 					PixelSize += 1
 			if event.key == pygame.K_DOWN:
 					PixelSize -= 1
-	screen.fill((0, 0, 0))
+	screen.fill(BGColor)
 	DrawPage()
 	pygame.display.flip()
 pygame.quit()
