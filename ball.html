@@ -108,29 +108,24 @@
 
     // Shared values
     const lightWorldPosition = [1, 8, -10];
-    const lightColor = [0, 0, 1, 1];
+    const lightColor = [1, 1, 1, 1];
     const camera = m4.identity();
     const view = m4.identity();
     const viewProjection = m4.identity();
 
     const tex = twgl.createTexture(gl, {
       min: gl.NEAREST,
-      mag: gl.NEAREST,
-      src: [
-        255, 255, 255, 255,
-        192, 192, 192, 255,
-        192, 192, 192, 255,
-        255, 255, 255, 255,
-      ],
+      // mag: gl.NEAREST,
+      src: 'football-texture.jpg',
     });
 
     const drawObjects = [];
     const uniforms = {
       u_lightWorldPos: lightWorldPosition,
       u_lightColor: lightColor,
-      u_diffuseMult: chroma.hsv(0.3, 0.0, 0.8).gl(),
+      u_diffuseMult: chroma.hsv(0.1, 0.1, 1.0).gl(),
       u_specular: [1, 1, 1, 1],
-      u_shininess: 100,
+      u_shininess: 80,
       u_specularFactor: 1,
       u_diffuse: tex,
       u_viewInverse: camera,
@@ -166,7 +161,6 @@
       m4.identity(world);
 // ===================================================
       m4.translate(world, [0, Math.sin(time), zpos], world);
-      console.log(front, zpos)
       if (Math.floor(zpos) == -10 || Math.floor(zpos) == 10)
       {
         front = !front;
